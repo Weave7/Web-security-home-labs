@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}CorpConnect{% endblock %} — Internal HR Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0d1b2a;
+      --blue:   #1a56db;
+      --blue-l: #e8f0fe;
+      --teal:   #0ea5a0;
+      --line:   #e4e7eb;
+      --bg:     #f5f7fa;
+      --card:   #ffffff;
+      --text:   #1c2333;
+      --muted:  #6b7690;
+      --danger: #dc2626;
+      --success:#16a34a;
+      --tag-event:   #dbeafe;
+      --tag-event-t: #1d4ed8;
+      --tag-policy:  #fef9c3;
+      --tag-policy-t:#a16207;
+      --tag-product: #dcfce7;
+      --tag-product-t:#15803d;
+      --radius: 10px;
+      --shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.05);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Sidebar ── */
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 230px;
+      min-height: 100vh;
+      background: var(--navy);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar-brand {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .sidebar-brand .logo-mark {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .sidebar-brand h1 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -.3px;
+    }
+
+    .sidebar nav { padding: 18px 12px; flex: 1; }
+
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      padding: 14px 12px 6px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 7px;
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      transition: background .15s, color .15s;
+      margin-bottom: 2px;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,.1);
+      color: #fff;
+    }
+    .nav-link svg { flex-shrink: 0; opacity: .7; }
+    .nav-link.active svg { opacity: 1; }
+
+    .nav-link.highlight {
+      margin-top: 6px;
+      background: rgba(14,165,160,.15);
+      color: var(--teal);
+    }
+    .nav-link.highlight:hover { background: rgba(14,165,160,.25); }
+
+    .sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      font-size: 12px;
+      color: rgba(255,255,255,.35);
+    }
+    .sidebar-footer strong { display: block; color: rgba(255,255,255,.6); margin-bottom: 2px; }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .topbar .page-title { font-size: 16px; font-weight: 600; }
+    .topbar .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .avatar-sm {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .content { padding: 32px; flex: 1; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Announcement ── */
+    .announce-item {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .announce-item:last-child { border-bottom: none; }
+    .announce-date {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 70px;
+      font-family: 'DM Mono', monospace;
+      padding-top: 2px;
+    }
+    .announce-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .announce-body p  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 4px;
+      padding: 2px 7px;
+      margin-bottom: 5px;
+    }
+    .tag-Event   { background: var(--tag-event);   color: var(--tag-event-t); }
+    .tag-Policy  { background: var(--tag-policy);  color: var(--tag-policy-t); }
+    .tag-Product { background: var(--tag-product); color: var(--tag-product-t); }
+
+    /* ── Directory grid ── */
+    .emp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .emp-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: box-shadow .2s;
+    }
+    .emp-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,.1); }
+    .emp-avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--blue-l);
+      color: var(--blue);
+      font-size: 16px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+    }
+    .emp-name  { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .emp-title { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .emp-dept  {
+      font-size: 11px;
+      background: var(--blue-l);
+      color: var(--blue);
+      border-radius: 4px;
+      padding: 2px 8px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    /* ── Forms ── */
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    .form-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    input[type="url"], input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fafbfc;
+      color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,86,219,.12);
+      background: #fff;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 20px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { opacity: .9; }
+
+    /* ── Alerts ── */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .alert-error   { background: #fef2f2; border: 1px solid #fecaca; color: var(--danger); }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--success); }
+
+    /* ── Result card ── */
+    .result-profile {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 20px 24px;
+    }
+    .result-icon {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #0ea5a0 0%, #1a56db 100%);
+      color: #fff; font-size: 18px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .result-name  { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .result-desc  { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    .raw-panel {
+      margin: 0 24px 24px;
+      background: #0d1b2a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .raw-panel-header {
+      padding: 8px 14px;
+      background: rgba(255,255,255,.05);
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,.45);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .raw-panel pre {
+      padding: 14px;
+      font-size: 11.5px;
+      font-family: 'DM Mono', monospace;
+      color: #a3e635;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    /* ── Status badge ── */
+    .status-badge {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 600; font-family: 'DM Mono', monospace;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .status-2xx { background: #dcfce7; color: #15803d; }
+    .status-3xx { background: #fef9c3; color: #a16207; }
+    .status-4xx, .status-5xx { background: #fee2e2; color: #dc2626; }
+
+    .meta-row {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      padding: 10px 24px;
+      border-top: 1px solid var(--line);
+      font-size: 12px; color: var(--muted);
+      align-items: center;
+    }
+    .meta-row code {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 11px;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    /* ── Misc ── */
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+    }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -1px; }
+    .stat-sub   { font-size: 12px; color: var(--teal); margin-top: 4px; font-weight: 500; }
+
+    .divider { height: 1px; background: var(--line); margin: 24px 0; }
+
+    .import-note {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--blue-l);
+      border-left: 3px solid var(--blue);
+      border-radius: 4px;
+      padding: 10px 14px;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-mark">Internal Portal</div>
+      <h1>CorpConnect</h1>
+    </div>
+    <nav>
+      <div class="nav-section-label">Workspace</div>
+      <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-link {% if request.path == '/directory' %}active{% endif %}" href="/directory">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Employee Directory
+      </a>
+
+    </nav>
+    <div class="sidebar-footer">
+      <strong>Jenna Park</strong>
+      HR Administrator &middot; IT
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <span class="page-title">{% block page_title %}Dashboard{% endblock %}</span>
+      <div class="user-pill">
+        <span>Jenna Park</span>
+        <div class="avatar-sm">JP</div>
+      </div>
+    </div>
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

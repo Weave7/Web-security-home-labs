@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Employee Directory{% endblock %}
+{% block page_title %}Employee Directory{% endblock %}
+
+{% block content %}
+<div class="section-title">All Employees</div>
+<div class="emp-grid">
+  {% for emp in employees %}
+  <div class="emp-card">
+    <div class="emp-avatar">{{ emp.avatar }}</div>
+    <div class="emp-name">{{ emp.name }}</div>
+    <div class="emp-title">{{ emp.title }}</div>
+    <div class="emp-dept">{{ emp.dept }}</div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">{{ emp.email }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

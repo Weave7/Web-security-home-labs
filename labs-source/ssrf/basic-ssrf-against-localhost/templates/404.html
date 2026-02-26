@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}404 Not Found{% endblock %}
+{% block page_title %}Not Found{% endblock %}
+{% block content %}
+<div style="max-width:480px;text-align:center;padding:60px 0;">
+  <div style="font-size:72px;font-weight:800;color:var(--line);letter-spacing:-4px;line-height:1;">404</div>
+  <div style="font-size:20px;font-weight:600;margin:16px 0 8px;">Page Not Found</div>
+  <p style="font-size:14px;color:var(--muted);line-height:1.6;">The page you're looking for doesn't exist or has been moved.</p>
+  <a href="/" class="btn btn-primary" style="margin-top:24px;text-decoration:none;">← Back to Dashboard</a>
+</div>
+{% endblock %}

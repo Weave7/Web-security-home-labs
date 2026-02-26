@@ -1,0 +1,6 @@
+{
+  "id": "basic-ssrf-against-localhost",
+  "title": "Basic SSRF against the local server",
+  "description": "This lab has a check balance feature which fetches data from an internal system. To solve the lab, change the check balance URL to access the admin interface at http://localhost:5000/admin and fire the employee Tom Reyes.",
+  "difficulty": "Apprentice"
+}

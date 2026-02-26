@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= lab.title %> - Lab Details</title>
+    <style>
+        /* Inherit your existing dark mode styles here */
+        body { background-color: #0d0d0d; color: #e0e0e0; font-family: monospace; padding: 2rem; }
+        .container { max-width: 800px; margin: 0 auto; background: #141414; padding: 2rem; border-radius: 8px; border: 1px solid #333; }
+        .btn { display: inline-block; padding: 10px 15px; background: #ff6600; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; border: none; cursor: pointer; }
+        .btn:hover { background: #e65c00; }
+        .btn-secondary { background: #333; margin-right: 10px; }
+        .btn-secondary:hover { background: #444; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.9em; font-weight: bold; }
+        .solved { background-color: #7c4dff; color: #fff; box-shadow: 0 0 8px rgba(124, 77, 255, 0.4); }
+        .unsolved { background-color: #222; color: #888; border: 1px solid #333; }
+        .lab-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 1rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/" class="btn btn-secondary">&larr; Back to Dashboard</a>
+        
+        <div class="lab-header" style="margin-top: 20px;">
+            <h1><%= lab.title %></h1>
+            <div>
+                <span class="badge"><%= lab.difficulty %></span>
+                <% if (lab.is_solved) { %>
+                    <span class="badge solved">&#10003; Solved</span>
+                <% } else { %>
+                    <span class="badge unsolved">Unsolved</span>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="lab-content">
+            <h3>Description</h3>
+            <p><%= lab.description %></p>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #333;">
+                <button id="start-lab-btn" 
+                        class="btn" 
+                        data-lab-id="<%= lab.id %>" 
+                        data-category-id="<%= categoryId %>">
+                    Access the lab
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    document.getElementById('start-lab-btn').addEventListener('click', async (e) => {
+        const btn = e.target;
+        
+        // 1. Grab the IDs from the button's data attributes
+        const labId = btn.getAttribute('data-lab-id');
+        const categoryId = btn.getAttribute('data-category-id');
+
+        // Optional: Change button text to show it's loading
+        const originalText = btn.innerText;
+        btn.innerText = "Starting Lab...";
+        btn.disabled = true;
+
+        try {
+            // 2. Send the POST request to your backend route
+            const response = await fetch('/api/labs/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ categoryId, labId })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // 3. Success! Redirect the user to their new container
+                // Assuming your backend returns the mapped port like: { data: { port: 32768 } }
+                const containerUrl = result.data.url; 
+                
+                // Open the lab in a new tab!
+                // 1. Give the user visual feedback
+                btn.innerText = "Booting environment... please wait ⏳";
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                window.open(containerUrl, '_blank');
+
+                // Reset the button
+                btn.innerText = "Lab Running (Click to open again)";
+                btn.disabled = false;
+            } else {
+                // Handle backend errors (e.g., 404 or 500)
+                alert("Error starting lab: " + result.error);
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+
+        } catch (error) {
+            console.error("Network error:", error);
+            alert("Failed to reach the server.");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    });
+</script>
+</html>

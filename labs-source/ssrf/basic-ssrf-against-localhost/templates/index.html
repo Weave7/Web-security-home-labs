@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="stat-strip">
+  <div class="stat-card">
+    <div class="stat-label">Total Employees</div>
+    <div class="stat-value">{{ employees|length }}</div>
+    <div class="stat-sub">↑ 2 this month</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Open Positions</div>
+    <div class="stat-value">4</div>
+    <div class="stat-sub">3 in Engineering</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Announcements</div>
+    <div class="stat-value">{{ announcements|length }}</div>
+    <div class="stat-sub">↑ 1 this week</div>
+  </div>
+</div>
+
+<div class="grid-2">
+
+  <div>
+    <div class="section-title">Recent Announcements</div>
+    <div class="card">
+      <div class="card-header">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Company Announcements
+      </div>
+      {% for ann in announcements %}
+      <div class="announce-item">
+        <div class="announce-date">{{ ann.date }}</div>
+        <div class="announce-body">
+          <div class="tag tag-{{ ann.tag }}">{{ ann.tag }}</div>
+          <h3>{{ ann.title }}</h3>
+          <p>{{ ann.body }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div>
+    <div class="section-title">Employee Services</div>
+    
+    <div class="card" style="padding: 20px 24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:38px;height:38px;border-radius:8px;background:rgba(14,165,160,.1);display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" fill="none" stroke="var(--teal)" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;">Kudos Points Balance</div>
+          <div style="font-size:12px;color:var(--muted);">Check your redeemable rewards</div>
+        </div>
+      </div>
+
+      <form id="rewards-form">
+        <input type="hidden" name="api_url" value="http://api.corpconnect.internal:5001/api/internal/rewards">
+        <button type="submit" class="btn btn-primary" style="background:var(--teal); border:none; width:100%;">
+          Check Balance
+        </button>
+      </form>
+
+      <div id="rewards-result" style="margin-top:16px; font-family:'DM Mono',monospace; font-size:12px; color:var(--text); word-wrap:break-word;"></div>
+    </div>
+
+    <script>
+      document.getElementById('rewards-form').addEventListener('submit', function(e) {
+        e.preventDefault(); 
+        
+        const resultDiv = document.getElementById('rewards-result');
+        resultDiv.innerHTML = '<span style="color:var(--muted);">Fetching data from internal API...</span>';
+        
+        const formData = new FormData(this);
+        
+        fetch('/check-rewards', {
+          method: 'POST',
+          body: new URLSearchParams(formData) 
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Server returned ' + response.status);
+            }
+            return response.text();
+        })
+        .then(data => {
+            try {
+                // Try parsing the response as JSON (Legitimate Flow)
+                const jsonData = JSON.parse(data);
+                resultDiv.innerHTML = `
+                    <div style="background: var(--bg); padding: 16px; border-radius: 8px; border: 1px solid var(--line);">
+                        <div style="font-size: 14px; color: var(--teal); font-weight: 600; margin-bottom: 12px; display:flex; align-items:center; gap:6px;">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            Kudos Points Retrieved
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; padding-bottom:6px; border-bottom:1px solid var(--line);"><span>Tier:</span> <strong>${jsonData.employee_tier}</strong></div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; padding-bottom:6px; border-bottom:1px solid var(--line);"><span>Points:</span> <strong style="color:var(--blue);">${jsonData.kudos_points}</strong></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Next Reward:</span> <strong>${jsonData.next_reward}</strong></div>
+                    </div>
+                `;
+            } catch (e) {
+                // If parsing fails, it's not JSON. It's the HTML admin panel! (Exploit Flow)
+                // We blindly render the HTML payload.
+                resultDiv.innerHTML = data;
+            }
+        })
+        .catch(error => {
+          resultDiv.innerHTML = '<span style="color:#ef4444;">Error contacting server: ' + error.message + '</span>';
+        });
+      });
+    </script>
+  </div>
+</div>
+{% endblock %}
